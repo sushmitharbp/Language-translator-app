@@ -15,9 +15,16 @@ language_reverse = {v: k for k, v in language.items()}
 st.set_page_config(page_title="🈯 Language Translator", layout="centered")
 st.title("🈯 Language Translator")
 
-source_lang = st.selectbox("Select Source Language", list(language.values()))
-target_lang = st.selectbox("Select Target Language", list(language.values()))
+source_lang = st.selectbox("Select Source Language", ["Select Language"] + list(language.values()))
+if source_lang != "Select Language":
+    source_code = language_reverse[source_lang]
+
+target_lang = st.selectbox("Select Target Language", ["Select Language"] + list(language.values()))
+if target_lang != "Select Language":
+    target_code = language_reverse[target_lang]
+
 text_to_translate = st.text_area("Enter text to translate:")
+
 
 if st.button("Translate"):
     if text_to_translate.strip() == "":
@@ -32,11 +39,6 @@ if st.button("Translate"):
             st.success(f"Translated to {target_lang}:")
             st.write(f"**Input:** {text_to_translate}")
             st.write(f"**Translation:** {translated}")
-
-            if st.button("🔊 Listen to Translation"):
-                tts = gTTS(translated, lang=language_reverse[target_lang])
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
-                    tts.save(fp.name)
-                    st.audio(fp.name, format="audio/mp3")
+            
         except Exception as e:
             st.error(f"❌ Error during translation: {e}")
